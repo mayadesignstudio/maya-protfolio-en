@@ -1,0 +1,340 @@
+// בדיקת תאימות דפדפן
+if (!('IntersectionObserver' in window)) {
+    // פולי-פיל בסיסי ל-IntersectionObserver אם צריך
+    const script = document.createElement('script');
+    script.src = 'https://polyfill.io/v3/polyfill.min.js?features=IntersectionObserver';
+    document.head.appendChild(script);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const totalPages = 19;
+    const swiperWrapper = document.querySelector('.swiper-wrapper');
+    const thumbnailsContainer = document.querySelector('.thumbnails-container');
+    const zoomModal = document.querySelector('.zoom-modal');
+    const zoomImage = document.getElementById('zoom-image');
+    const zoomClose = document.querySelector('.zoom-close');
+    const zoomIcon = document.querySelector('.zoom-icon');
+    const zoomIn = document.querySelector('.zoom-in');
+    const zoomOut = document.querySelector('.zoom-out');
+    const zoomReset = document.querySelector('.zoom-reset');
+    
+    // עדכון הטקסט של מספר הדפים הכולל
+    document.getElementById('total-pages').textContent = totalPages;
+    
+    // טעינת התמונות הראשיות והמוקטנות
+    for (let i = 1; i <= totalPages; i++) {
+        const pageNum = i.toString().padStart(2, '0'); // הוספת אפס מובילי
+        const imagePath = `assets/images/page-${pageNum}.jpg`;
+        
+        // הוספת תמונה לתצוגה הראשית
+        const slide = document.createElement('div');
+        slide.className = 'swiper-slide';
+        slide.innerHTML = `<img src="${imagePath}" alt="עמוד ${i}" loading="lazy" data-page="${i}">`;
+        swiperWrapper.appendChild(slide);
+        
+        // הוספת תמונה מוקטנת
+        const thumbnail = document.createElement('img');
+        thumbnail.className = 'thumbnail';
+        thumbnail.src = imagePath;
+        thumbnail.alt = `תמונה מוקטנת ${i}`;
+        thumbnail.dataset.index = i - 1;
+        thumbnail.addEventListener('click', function() {
+            swiper.slideTo(parseInt(this.dataset.index));
+        });
+        thumbnailsContainer.appendChild(thumbnail);
+    }
+    
+    // אתחול Swiper עם אפקט מעודן
+    const swiper = new Swiper('.swiper-container', {
+        effect: 'creative',
+        creativeEffect: {
+            prev: {
+                // הדף הקודם יזוז החוצה
+                translate: ['-120%', 0, -500],
+                opacity: 0,
+            },
+            next: {
+                // הדף הבא יכנס מהצד
+                translate: ['120%', 0, -500],
+                opacity: 0,
+            },
+        },
+        speed: 800,
+        grabCursor: true,
+        centeredSlides: true,
+        slidesPerView: 1,
+        keyboard: {
+            enabled: true,
+        },
+        mousewheel: {
+            invert: false,
+            sensitivity: 0.8,
+        },
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+            dynamicBullets: true,
+        },
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+        on: {
+            slideChange: function() {
+                // עדכון מספר עמוד נוכחי
+                document.getElementById('current-page').textContent = this.activeIndex + 1;
+                
+                // הוספת אנימציית דפדוף
+                const activeSlide = document.querySelector('.swiper-slide-active');
+                activeSlide.querySelector('img').classList.add('page-turning');
+                
+                // הסרת האנימציה אחרי שהיא מסתיימת
+                setTimeout(() => {
+                    activeSlide.querySelector('img').classList.remove('page-turning');
+                }, 700);
+                
+                // עדכון התמונה המוקטנת הפעילה
+                document.querySelectorAll('.thumbnail').forEach((thumb, idx) => {
+                    if (idx === this.activeIndex) {
+                        thumb.classList.add('active');
+                        // גלילה אוטומטית לתמונה המוקטנת הפעילה
+                        thumb.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                    } else {
+                        thumb.classList.remove('active');
+                    }
+                });
+            },
+            init: function() {
+                // סימון התמונה המוקטנת הראשונה כפעילה
+                document.querySelector('.thumbnail').classList.add('active');
+            }
+        }
+    });
+    
+    // מאזיני מקלדת לניווט
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+            if (zoomModal.classList.contains('show')) {
+                // כשהמודאל פתוח, לא לעשות כלום
+                return;
+            }
+            
+            if (e.key === 'ArrowLeft') {
+                swiper.slideNext();
+            } else if (e.key === 'ArrowRight') {
+                swiper.slidePrev();
+            }
+        } else if (e.key === 'Escape' && zoomModal.classList.contains('show')) {
+            closeZoomModal();
+        }
+    });
+    
+    // מערכת הגדלת תמונה משופרת
+    let currentScale = 1;
+    let startScale = 1;
+    let currentX = 0;
+    let currentY = 0;
+    let startX = 0;
+    let startY = 0;
+    let isDragging = false;
+    
+    // פתיחת מודאל הגדלה
+    function openZoomModal(imgSrc, pageNum) {
+        zoomImage.src = imgSrc;
+        zoomImage.dataset.page = pageNum;
+        resetZoom();
+        zoomModal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    // סגירת מודאל הגדלה
+    function closeZoomModal() {
+        zoomModal.classList.remove('show');
+        document.body.style.overflow = '';
+        
+        // חכה עד שהאנימציה תסתיים ואז איפוס המקור
+        setTimeout(() => {
+            zoomImage.src = '';
+            resetZoom();
+        }, 400);
+    }
+    
+    // איפוס מצב הזום
+    function resetZoom() {
+        currentScale = 1;
+        currentX = 0;
+        currentY = 0;
+        applyTransform();
+    }
+    
+    // החלת הטרנספורמציה הנוכחית
+    function applyTransform() {
+        zoomImage.style.transform = `translate(${currentX}px, ${currentY}px) scale(${currentScale})`;
+    }
+    
+    // הגדלה
+    function zoomInImage() {
+        currentScale = Math.min(currentScale * 1.2, 5); // מגביל עד פי 5
+        applyTransform();
+    }
+    
+    // הקטנה
+    function zoomOutImage() {
+        currentScale = Math.max(currentScale / 1.2, 0.5); // לא פחות מחצי
+        applyTransform();
+    }
+    
+    // מאזיני אירועים לתמונות
+    swiperWrapper.addEventListener('click', function(e) {
+        if (e.target.tagName === 'IMG') {
+            const imgSrc = e.target.src;
+            const pageNum = e.target.dataset.page;
+            openZoomModal(imgSrc, pageNum);
+        }
+    });
+    
+    // אייקון זום גם פותח את המודאל
+    zoomIcon.addEventListener('click', function() {
+        const activeSlide = document.querySelector('.swiper-slide-active img');
+        if (activeSlide) {
+            const imgSrc = activeSlide.src;
+            const pageNum = activeSlide.dataset.page;
+            openZoomModal(imgSrc, pageNum);
+        }
+    });
+    
+    // סגירת המודאל
+    zoomClose.addEventListener('click', closeZoomModal);
+    zoomModal.addEventListener('click', function(e) {
+        if (e.target === zoomModal) {
+            closeZoomModal();
+        }
+    });
+    
+    // כפתורי הגדלה והקטנה
+    zoomIn.addEventListener('click', zoomInImage);
+    zoomOut.addEventListener('click', zoomOutImage);
+    zoomReset.addEventListener('click', resetZoom);
+    
+    // תמיכה בגלגלת העכבר להגדלה והקטנה
+    zoomImage.addEventListener('wheel', function(e) {
+        e.preventDefault();
+        if (e.deltaY < 0) {
+            zoomInImage();
+        } else {
+            zoomOutImage();
+        }
+    });
+    
+    // אירועי מגע (drag) לתמונה המוגדלת
+    zoomImage.addEventListener('mousedown', function(e) {
+        if (currentScale > 1) {
+            isDragging = true;
+            startX = e.clientX - currentX;
+            startY = e.clientY - currentY;
+            this.style.cursor = 'grabbing';
+        }
+    });
+    
+    document.addEventListener('mousemove', function(e) {
+        if (isDragging) {
+            currentX = e.clientX - startX;
+            currentY = e.clientY - startY;
+            applyTransform();
+        }
+    });
+    
+    document.addEventListener('mouseup', function() {
+        if (isDragging) {
+            isDragging = false;
+            zoomImage.style.cursor = 'grab';
+        }
+    });
+    
+    // תמיכה במכשירי מגע
+    if (typeof Hammer !== 'undefined') {
+        const hammertime = new Hammer(zoomImage);
+        
+        hammertime.get('pinch').set({ enable: true });
+        hammertime.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+        
+        let lastScale = 1;
+        
+        hammertime.on('pinchstart', function(e) {
+            startScale = currentScale || 1;
+            lastScale = 1;
+        });
+        
+        hammertime.on('pinch', function(e) {
+            currentScale = Math.max(0.5, Math.min(startScale * e.scale / lastScale, 5));
+            applyTransform();
+        });
+        
+        hammertime.on('pinchend', function() {
+            lastScale = 1;
+        });
+        
+        hammertime.on('panstart', function() {
+            if (currentScale > 1) {
+                startX = currentX;
+                startY = currentY;
+            }
+        });
+        
+        hammertime.on('pan', function(e) {
+            if (currentScale > 1) {
+                currentX = startX + e.deltaX;
+                currentY = startY + e.deltaY;
+                applyTransform();
+            }
+        });
+        
+        // כפול-לחיצה להגדלה מהירה
+        hammertime.on('doubletap', function() {
+            if (currentScale === 1) {
+                currentScale = 2.5;
+            } else {
+                currentScale = 1;
+                currentX = 0;
+                currentY = 0;
+            }
+            applyTransform();
+        });
+    }
+    
+    // הוספת טעינה מקדימה של תמונות
+    function preloadImages() {
+        const nextIndex = swiper.activeIndex + 1;
+        const prevIndex = swiper.activeIndex - 1;
+        
+        if (nextIndex < totalPages) {
+            const nextPage = (nextIndex + 1).toString().padStart(2, '0');
+            const img = new Image();
+            img.src = `assets/images/page-${nextPage}.jpg`;
+        }
+        
+        if (prevIndex >= 0) {
+            const prevPage = (prevIndex + 1).toString().padStart(2, '0');
+            const img = new Image();
+            img.src = `assets/images/page-${prevPage}.jpg`;
+        }
+    }
+    
+    // הפעלת טעינה מקדימה בכל החלפת עמוד
+    swiper.on('slideChange', preloadImages);
+    
+    // טעינה מקדימה ראשונית
+    preloadImages();
+    
+    // אפקט תקריב בריחוף על תמונות
+    const slideImages = document.querySelectorAll('.swiper-slide img');
+    slideImages.forEach(img => {
+        img.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.02)';
+        });
+        
+        img.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+        });
+    });
+}); 

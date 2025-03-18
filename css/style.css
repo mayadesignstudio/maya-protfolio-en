@@ -1,0 +1,623 @@
+:root {
+    --primary-color: #1e3a8a;
+    --accent-color: #ff6b00;
+    --bg-color: #f0f4f8;
+    --text-color: #333;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.portfolio-container {
+    width: 100%;
+    height: 100%;
+    max-width: 1400px;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.swiper-container {
+    width: 100%;
+    height: 85%;
+    margin-bottom: 15px;
+    position: relative;
+    overflow: visible;
+}
+
+.swiper-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    transition: transform 0.5s ease, box-shadow 0.5s ease;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.swiper-slide-active {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.swiper-slide img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+    filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.1));
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.page-info {
+    text-align: center;
+    margin: 10px 0;
+    font-size: 18px;
+    color: var(--text-color);
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.thumbnails-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 12px;
+    padding: 15px 0;
+    height: 90px;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+    justify-content: center;
+}
+
+.thumbnails-container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+.thumbnail {
+    width: 60px;
+    height: 80px;
+    border-radius: 5px;
+    object-fit: cover;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    opacity: 0.7;
+    border: 2px solid transparent;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+}
+
+.thumbnail:hover {
+    opacity: 1;
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.thumbnail.active {
+    opacity: 1;
+    border-color: var(--accent-color);
+    transform: scale(1.08);
+    box-shadow: 0 6px 15px rgba(var(--accent-color-rgb), 0.2);
+}
+
+.swiper-button-next, .swiper-button-prev {
+    color: var(--primary-color);
+    background-color: rgba(255, 255, 255, 0.9);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    opacity: 0.8;
+}
+
+.swiper-button-next:hover, .swiper-button-prev:hover {
+    background-color: white;
+    transform: scale(1.1);
+    opacity: 1;
+}
+
+.swiper-button-next:after, .swiper-button-prev:after {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.swiper-pagination-bullet {
+    background-color: var(--primary-color);
+    opacity: 0.6;
+    transition: all 0.3s ease;
+}
+
+.swiper-pagination-bullet-active {
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+/* אנימציות לטעינת התמונות */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.swiper-slide-active img {
+    animation: fadeIn 0.6s cubic-bezier(0.39, 0.575, 0.565, 1) forwards;
+}
+
+/* סגנון אייקון הזום */
+.zoom-icon {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    background-color: #2950a3;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.zoom-icon:hover {
+    background-color: #3e6ac2;
+    transform: translateY(-2px);
+}
+
+.zoom-icon svg {
+    color: white;
+    width: 20px;
+    height: 20px;
+}
+
+.swiper-container:hover .zoom-icon {
+    opacity: 1;
+}
+
+/* סגנון מודאל להגדלת תמונה */
+.zoom-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.zoom-modal-content {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 90%;
+    max-height: 90vh;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+#zoom-image {
+    position: absolute;
+    max-width: 90%;
+    max-height: 80vh;
+    transform-origin: center;
+    cursor: grab;
+    top: 50%;
+    left: 50%;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+}
+
+#zoom-image:active {
+    cursor: grabbing;
+}
+
+/* עיצוב מחדש של כפתורי הזום והאיפוס בסגנון מודרני וכחול */
+.zoom-controls {
+    position: absolute;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 15px;
+    z-index: 10000;
+    padding: 10px 15px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 30px;
+    backdrop-filter: blur(5px);
+}
+
+.zoom-controls button {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    background-color: #2950a3;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.zoom-controls button:hover {
+    background-color: #3e6ac2;
+    transform: translateY(-2px);
+}
+
+.zoom-controls .zoom-reset {
+    width: 70px !important;
+    border-radius: 20px !important;
+    font-size: 14px !important;
+    font-weight: normal !important;
+}
+
+.zoom-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    color: white;
+    background-color: #2950a3;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 10000;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.zoom-close:hover {
+    background-color: #3e6ac2;
+    transform: translateY(-2px);
+}
+
+.zoom-close svg {
+    width: 20px;
+    height: 20px;
+    stroke: white;
+    stroke-width: 2.5;
+}
+
+/* התאמה למובייל */
+@media (max-width: 768px) {
+    .portfolio-container {
+        padding: 10px;
+    }
+    
+    .thumbnails-container {
+        height: 70px;
+        padding: 10px 0;
+    }
+    
+    .thumbnail {
+        width: 45px;
+        height: 60px;
+    }
+    
+    .swiper-button-next, .swiper-button-prev {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .swiper-button-next:after, .swiper-button-prev:after {
+        font-size: 16px;
+    }
+    
+    .zoom-controls {
+        padding: 8px 12px;
+        gap: 10px;
+    }
+    
+    .zoom-controls button {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+    }
+    
+    .zoom-controls .zoom-reset {
+        width: 60px !important;
+        font-size: 12px !important;
+    }
+    
+    .zoom-icon {
+        width: 36px;
+        height: 36px;
+        bottom: 12px;
+        right: 12px;
+    }
+    
+    .zoom-icon svg {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .zoom-close {
+        width: 36px;
+        height: 36px;
+        top: 15px;
+        right: 15px;
+    }
+    
+    .zoom-close svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+/* משתנה צבע לשימוש ב-box-shadow */
+:root {
+    --accent-color-rgb: 255, 107, 0;
+}
+
+/* אנימציה לדפדוף */
+@keyframes pageTurn {
+    0% { transform: rotateY(0); opacity: 1; }
+    40% { transform: rotateY(15deg); opacity: 0.8; }
+    100% { transform: rotateY(0); opacity: 1; }
+}
+
+.page-turning {
+    animation: pageTurn 0.7s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+/* הגדרות רספונסיביות מקיפות לכל סוגי המכשירים */
+/* התאמות למחשבים גדולים */
+@media screen and (min-width: 1441px) {
+  .portfolio-container {
+    max-width: 90%;
+    margin: 0 auto;
+  }
+  
+  .swiper-slide img {
+    max-height: 80vh;
+  }
+}
+
+/* התאמות למחשבים רגילים */
+@media screen and (max-width: 1440px) {
+  .portfolio-container {
+    max-width: 95%;
+  }
+}
+
+/* התאמות לטאבלטים גדולים ומחשבים ניידים */
+@media screen and (max-width: 1024px) {
+  .portfolio-container {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 10px;
+  }
+  
+  .swiper-container {
+    width: 100%;
+    height: auto;
+  }
+  
+  .swiper-slide img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+  
+  .swiper-button-next, .swiper-button-prev {
+    transform: scale(0.8);
+  }
+}
+
+/* התאמות לטאבלטים בינוניים */
+@media screen and (max-width: 900px) {
+  .page-info {
+    font-size: 14px;
+    padding: 8px 0;
+  }
+}
+
+/* התאמות לטאבלטים */
+@media screen and (max-width: 768px) {
+  .thumbnails-container {
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding: 8px 0;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+  }
+  
+  .swiper-slide {
+    overflow: hidden;
+    touch-action: none;
+  }
+  
+  .swiper-slide img {
+    max-height: 70vh;
+    object-fit: contain;
+    margin: 0 auto;
+    display: block;
+    touch-action: pinch-zoom;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    transform-origin: center center;
+  }
+  
+  .swiper-slide.zoomed {
+    overflow: scroll;
+    touch-action: pan-x pan-y;
+  }
+  
+  .swiper-slide.zoomed img {
+    touch-action: none;
+  }
+  
+  .zoom-icon {
+    display: none;
+  }
+  
+  .swiper-pagination {
+    bottom: 5px;
+  }
+  
+  /* שיפור נראות כפתורי ניווט במובייל */
+  .swiper-button-next,
+  .swiper-button-prev {
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(5px);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* התאמות לטלפונים חכמים */
+@media screen and (max-width: 480px) {
+  .swiper-container {
+    overflow: hidden;
+    touch-action: pan-y pinch-zoom;
+  }
+  
+  .swiper-slide {
+    overflow: hidden;
+    touch-action: none;
+  }
+  
+  .swiper-slide img {
+    max-height: 65vh;
+    touch-action: pinch-zoom;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    transform-origin: center center;
+  }
+  
+  .swiper-slide.zoomed {
+    overflow: scroll;
+    touch-action: pan-x pan-y;
+  }
+  
+  .swiper-slide.zoomed img {
+    touch-action: none;
+  }
+  
+  .zoom-controls {
+    display: none;
+  }
+  
+  .swiper-button-next,
+  .swiper-button-prev {
+    transform: scale(0.6);
+  }
+  
+  .page-info {
+    font-size: 12px;
+  }
+}
+
+/* התאמות לטלפונים קטנים */
+@media screen and (max-width: 360px) {
+  .thumbnail {
+    width: 38px;
+    height: 38px;
+  }
+  
+  .swiper-button-next, .swiper-button-prev {
+    transform: scale(0.5);
+  }
+}
+
+/* התאמות למצב אופקי במכשירים ניידים */
+@media (max-height: 500px) and (orientation: landscape) {
+  .swiper-slide img {
+    max-height: 75vh;
+  }
+  
+  .thumbnails-container {
+    padding: 5px 0;
+  }
+  
+  .thumbnail {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* שיפורים לביצועים במובייל */
+@media screen and (max-width: 480px) {
+  .swiper-container {
+    will-change: transform; /* אופטימיזציה לביצועים */
+  }
+  
+  .swiper-slide {
+    backface-visibility: hidden; /* מניעת הבהובים באנימציות */
+    -webkit-backface-visibility: hidden;
+  }
+  
+  .swiper-slide img {
+    max-height: 65vh;
+    transform: translateZ(0); /* אופטימיזציית GPU */
+    -webkit-transform: translateZ(0);
+  }
+  
+  .thumbnail {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+}
+
+/* שיפור תמיכה במכשירים עם מסך ברזולוציה גבוהה */
+@media screen and (min-device-pixel-ratio: 2), 
+       screen and (-webkit-min-device-pixel-ratio: 2),
+       screen and (min-resolution: 192dpi) {
+  .swiper-slide img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* שיפור נגישות */
+@media (prefers-reduced-motion: reduce) {
+  .swiper-slide,
+  .thumbnail,
+  .zoom-icon,
+  .swiper-button-next,
+  .swiper-button-prev {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* תמיכה ספציפית ב-iOS */
+@supports (-webkit-touch-callout: none) {
+  .swiper-slide img {
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    touch-action: manipulation pinch-zoom;
+  }
+} 
