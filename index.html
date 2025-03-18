@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-S9LG840PRR"></script>
@@ -15,7 +15,7 @@
     <meta name="HandheldFriendly" content="true">
     <meta name="MobileOptimized" content="width">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>תיק העבודות של מאיה קלטי</title>
+    <title>Maya Kalati's Portfolio</title>
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon">
@@ -24,15 +24,15 @@
     <div class="portfolio-container">
         <div class="swiper-container">
             <div class="swiper-wrapper">
-                <!-- התמונות ייטענו כאן דרך JavaScript -->
+                <!-- Images will be loaded here via JavaScript -->
             </div>
             
-            <!-- אלמנטי ניווט -->
+            <!-- Navigation elements -->
             <div class="swiper-button-next"></div>
             <div class="swiper-button-prev"></div>
             <div class="swiper-pagination"></div>
             
-            <!-- אייקון זום -->
+            <!-- Zoom icon -->
             <div class="zoom-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="11" cy="11" r="8"></circle>
@@ -44,35 +44,33 @@
             
         </div>
         
-        <div class="page-info">דף <span id="current-page">1</span> מתוך <span id="total-pages">19</span></div>
+        <div class="page-info">Page <span id="current-page">1</span> of <span id="total-pages">19</span></div>
         
         <div class="thumbnails-container">
-            <!-- התמונות המוקטנות ייטענו כאן דרך JavaScript -->
+            <!-- Thumbnails will be loaded here via JavaScript -->
         </div>
     </div>
 
-    <!-- מודאל להגדלת תמונה -->
+    <!-- Zoom Modal -->
     <div class="zoom-modal">
         <div class="zoom-modal-content">
-            <span class="zoom-close">
+            <img id="zoom-image" src="" alt="Zoomed image">
+            <div class="zoom-close">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
                     <line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
-            </span>
-            <img id="zoom-image" src="" alt="תמונה מוגדלת">
+            </div>
             <div class="zoom-controls">
-                <button class="zoom-in">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="8" x2="12" y2="16"></line>
-                        <line x1="8" y1="12" x2="16" y2="12"></line>
+                <button class="zoom-out">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
                     </svg>
                 </button>
-                <button class="zoom-out">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="8" y1="12" x2="16" y2="12"></line>
+                <button class="zoom-in">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
                     </svg>
                 </button>
                 <button class="zoom-reset">
@@ -80,7 +78,7 @@
                         <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
                         <path d="M3 3v5h5"></path>
                     </svg>
-                    איפוס
+                    Reset
                 </button>
             </div>
         </div>

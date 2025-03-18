@@ -5,7 +5,8 @@
     let posX = 0;
     let posY = 0;
     let isDragging = false;
-    let startX, startY;
+    let startX = 0;
+    let startY = 0;
     
     // משתנים למסכי מגע
     let lastDistance = 0;
@@ -23,7 +24,7 @@
     
     // פונקציה לעדכון התמונה
     function updateTransform() {
-        zoomImage.style.transform = `translate(calc(-50% + ${posX}px), calc(-50% + ${posY}px)) scale(${scale})`;
+        zoomImage.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
     }
     
     // איפוס התמונה
@@ -112,7 +113,7 @@
         const zoomModalContent = document.querySelector('.zoom-modal-content');
         const zoomTip = document.createElement('div');
         zoomTip.className = 'zoom-scroll-tip';
-        zoomTip.innerText = 'גלגל עכבר: לגלילה | SHIFT+גלגל: לזום';
+        zoomTip.innerText = 'Mouse wheel: Scroll | SHIFT+wheel: Zoom';
         zoomTip.style.position = 'absolute';
         zoomTip.style.bottom = '80px';
         zoomTip.style.left = '50%';

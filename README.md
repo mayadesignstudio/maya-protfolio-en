@@ -1,35 +1,35 @@
-# תיק העבודות של מאיה קלטי - מציג דיגיטלי
+# Maya Kalati's Portfolio - Digital Viewer
 
-פרויקט זה הוא מציג דיגיטלי לתיק העבודות של מאיה קלטי, המאפשר דפדוף נוח בין דפי ה-PDF המקוריים שהומרו לתמונות.
+This project is a digital viewer for Maya Kalati's portfolio, allowing easy navigation between the original PDF pages that have been converted to images.
 
-## תכונות
+## Features
 
-- **תצוגת דפים מלאה** - הצגת כל דף בגודל מלא במרכז המסך
-- **ניווט פשוט** - כפתורי קדימה ואחורה, ניווט באמצעות מקלדת וגלילה
-- **תמונות מוקטנות** - אפשרות לניווט מהיר באמצעות תמונות מוקטנות של כל הדפים
-- **הגדלת תמונות** - אפשרות להגדיל תמונות בלחיצה לצפייה בפרטים קטנים
-- **טעינה מקדימה** - טעינה מקדימה של דפים לשיפור חוויית המשתמש
-- **תמיכה מלאה במובייל** - תצוגה מותאמת לכל סוגי המכשירים
+- **Full Page Display** - Display each page in full size in the center of the screen
+- **Simple Navigation** - Forward and backward buttons, keyboard navigation, and scrolling
+- **Thumbnails** - Quick navigation using thumbnails of all pages
+- **Image Zoom** - Ability to zoom in on images by clicking to view small details
+- **Preloading** - Preloading of pages to improve user experience
+- **Full Mobile Support** - Display adapted for all types of devices
 
-## טכנולוגיות
+## Technologies
 
-- HTML5 ו-CSS3
+- HTML5 and CSS3
 - JavaScript
-- ספריית Swiper.js לניהול הדפדוף והתצוגה
+- Swiper.js library for managing page navigation and display
 
-## התקנה והפעלה
+## Installation and Usage
 
-1. הורד את הפרויקט למחשב המקומי שלך
-2. פתח את קובץ `index.html` בדפדפן כלשהו
-3. לחלופין, העלה את התיקייה לשרת אינטרנט כלשהו
+1. Download the project to your local computer
+2. Open the `index.html` file in any browser
+3. Alternatively, upload the folder to any web server
 
-## עדכון תוכן
+## Content Updates
 
-להוספה או עדכון של דפים:
+To add or update pages:
 
-1. הוסף את התמונות החדשות לתיקיית `assets/images` בפורמט `page-XX.jpg` (כאשר XX הוא מספר הדף עם אפס מוביל)
-2. עדכן את ערך `totalPages` בקובץ `js/main.js` לפי מספר הדפים החדש
+1. Add new images to the `assets/images` folder in the format `page-XX.jpg` (where XX is the page number with leading zero)
+2. Update the `totalPages` value in `js/main.js` according to the new number of pages
 
-## רישיון
+## License
 
-כל הזכויות שמורות למאיה קלטי © 2025 
+All rights reserved to Maya Kalati © 2025 
