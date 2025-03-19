@@ -11,13 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const swiperWrapper = document.querySelector('.swiper-wrapper');
     const thumbnailsContainer = document.querySelector('.thumbnails-container');
     const zoomModal = document.querySelector('.zoom-modal');
-    const zoomModalContent = document.querySelector('.zoom-modal-content');
-    const zoomImage = document.getElementById('zoom-image');
-    const zoomClose = document.querySelector('.zoom-close');
     const zoomIcon = document.querySelector('.zoom-icon');
-    const zoomIn = document.querySelector('.zoom-in');
-    const zoomOut = document.querySelector('.zoom-out');
-    const zoomReset = document.querySelector('.zoom-reset');
     
     // Update total pages text
     document.getElementById('total-pages').textContent = totalPages;
@@ -126,59 +120,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 swiper.slidePrev();
             }
         } else if (e.key === 'Escape' && zoomModal.classList.contains('show')) {
-            closeZoomModal();
+            // Use the global portfolioZoom object
+            if (window.portfolioZoom && window.portfolioZoom.closeModal) {
+                window.portfolioZoom.closeModal();
+            }
         }
-    });
-    
-    // Variables for zoom control
-    let scale = 1;
-    
-    // Function to apply zoom
-    function applyZoom() {
-        zoomImage.style.transform = `translate(-50%, -50%) scale(${scale})`;
-    }
-    
-    // Function to reset zoom
-    function resetZoom() {
-        scale = 1;
-        applyZoom();
-    }
-    
-    // Handle zoom buttons
-    zoomIn.addEventListener('click', function() {
-        scale += 0.2;
-        if (scale > 5) scale = 5;
-        applyZoom();
-    });
-    
-    zoomOut.addEventListener('click', function() {
-        scale -= 0.2;
-        if (scale < 0.5) scale = 0.5;
-        applyZoom();
-    });
-    
-    zoomReset.addEventListener('click', resetZoom);
-    
-    // Handle mouse wheel for zoom
-    zoomImage.addEventListener('wheel', function(e) {
-        e.preventDefault();
-        
-        if (e.deltaY < 0) {
-            // Zoom in
-            scale += 0.2;
-            if (scale > 5) scale = 5;
-        } else {
-            // Zoom out
-            scale -= 0.2;
-            if (scale < 0.5) scale = 0.5;
-        }
-        
-        applyZoom();
-    });
-    
-    // Prevent scrolling in modal
-    zoomModal.addEventListener('wheel', function(e) {
-        e.preventDefault();
     });
     
     // Preload images
@@ -216,6 +162,14 @@ document.addEventListener('DOMContentLoaded', function() {
             this.style.transform = 'scale(1)';
         });
     });
+
+    // Add zoom icon click event to open the zoom modal
+    zoomIcon.addEventListener('click', function() {
+        const currentImage = document.querySelector('.swiper-slide-active img');
+        if (currentImage && window.portfolioZoom && window.portfolioZoom.openModal) {
+            window.portfolioZoom.openModal(currentImage.src);
+        }
+    });
 });
 
 // תיקון בעיית תזוזת תמונות במובייל וטאבלטים
@@ -231,84 +185,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const img = slide.querySelector('img');
         if (!img) return;
         
-        // מניעת פתיחת המודאל בלחיצה על תמונה במובייל
+        // Prevent default image click to avoid conflicts with our zoom
         img.addEventListener('click', function(e) {
           e.preventDefault();
           e.stopPropagation();
+          
+          // Use our zoom.js functionality instead
+          if (window.portfolioZoom && window.portfolioZoom.openModal) {
+            window.portfolioZoom.openModal(img.src);
+          }
         }, true);
-        
-        // הגדרת משתנים לזום
-        let currentScale = 1;
-        let startScale = 1;
-        let lastTapTime = 0;
-        
-        // טיפול בתחילת מגע
-        img.addEventListener('touchstart', function(e) {
-          if (e.touches.length === 2) {
-            e.preventDefault();
-            startScale = currentScale;
-          }
-          
-          // טיפול בדאבל טאפ
-          const currentTime = new Date().getTime();
-          const tapLength = currentTime - lastTapTime;
-          if (tapLength < 300 && tapLength > 0) {
-            e.preventDefault();
-            currentScale = currentScale === 1 ? 2 : 1;
-            updateZoom();
-          }
-          lastTapTime = currentTime;
-        });
-        
-        // טיפול בתנועת אצבעות
-        img.addEventListener('touchmove', function(e) {
-          if (e.touches.length === 2) {
-            e.preventDefault();
-            const touch1 = e.touches[0];
-            const touch2 = e.touches[1];
-            
-            // חישוב המרחק בין האצבעות
-            const distance = Math.hypot(
-              touch2.clientX - touch1.clientX,
-              touch2.clientY - touch1.clientY
-            );
-            
-            // עדכון הסקייל בהתאם למרחק
-            const newScale = Math.min(Math.max(startScale * (distance / initialDistance), 1), 3);
-            if (newScale !== currentScale) {
-              currentScale = newScale;
-              updateZoom();
-            }
-          }
-        });
-        
-        // פונקציה לעדכון הזום
-        function updateZoom() {
-          img.style.transform = `scale(${currentScale})`;
-          slide.classList.toggle('zoomed', currentScale > 1);
-          
-          // עדכון מצב הסליידר
-          const swiper = slide.closest('.swiper-container').swiper;
-          if (swiper) {
-            if (currentScale > 1) {
-              swiper.allowTouchMove = false;
-              swiper.allowSlideNext = false;
-              swiper.allowSlidePrev = false;
-            } else {
-              swiper.allowTouchMove = true;
-              swiper.allowSlideNext = true;
-              swiper.allowSlidePrev = true;
-            }
-          }
-        }
-        
-        // איפוס הזום בסיום המגע
-        img.addEventListener('touchend', function() {
-          if (currentScale < 1.1) {
-            currentScale = 1;
-            updateZoom();
-          }
-        });
       });
       
       // הסתרת אייקון הזום במובייל
