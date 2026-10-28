@@ -1,0 +1,12 @@
+const menu=document.querySelector('.menu-toggle');
+const nav=document.querySelector('.site-nav');
+menu?.addEventListener('click',()=>{const open=menu.getAttribute('aria-expanded')!=='true';menu.setAttribute('aria-expanded',String(open));nav.classList.toggle('open',open);menu.textContent=open?'Close':'Menu';});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&menu?.getAttribute('aria-expanded')==='true'){menu.click();menu.focus();}});
+const lightbox=document.querySelector('.lightbox');
+let lastImageButton;
+document.querySelectorAll('[data-zoom]').forEach(button=>button.addEventListener('click',()=>{lastImageButton=button;const original=button.querySelector('img');lightbox.querySelector('img').src=original.src;lightbox.querySelector('img').alt=original.alt;lightbox.querySelector('p').textContent=button.dataset.caption||original.alt;lightbox.showModal();}));
+lightbox?.querySelector('button').addEventListener('click',()=>lightbox.close());
+lightbox?.addEventListener('close',()=>lastImageButton?.focus());
+lightbox?.addEventListener('click',e=>{if(e.target===lightbox)lightbox.close();});
+document.querySelector('[data-copy-email]')?.addEventListener('click',async()=>{const status=document.querySelector('.copy-status');try{await navigator.clipboard.writeText('maya.design.studio1@gmail.com');status.textContent='Email address copied.';}catch{status.textContent='Select and copy the email address above.';}});
+document.querySelectorAll('[data-filter]').forEach(button=>button.addEventListener('click',()=>{const category=button.dataset.filter;document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));document.querySelectorAll('.review-card').forEach(card=>card.hidden=category!=='all'&&!card.dataset.category.split(' ').includes(category));}));
